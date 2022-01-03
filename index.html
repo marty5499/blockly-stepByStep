@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title></title>
+  <style type="text/css">
+  .dropzones {
+    display: flex;
+    justify-content: space-evenly;
+  }
+
+  .dropzone {
+    width: 100px;
+    height: 100px;
+    background-color: mintcream;
+    border-radius: 5px;
+    border: 2px dashed darkgrey;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  #drag {
+    margin: unset;
+    width: 40px;
+    height: 40px;
+    background-color: coral;
+    border-radius: 4px;
+    border: 1px solid grey;
+  }
+  </style>
+</head>
+
+<body>
+  <div class="dropzones">
+    <div class="dropzone">
+      <div id="drag" ></div>
+    </div>
+    <div class="dropzone"></div>
+  </div>
+  <div>
+    <button id="simulate-dnd">Simulate Drag & Drop</button>
+  </div>
+  <script>
+  // The current parent index that the drag element is inside
+  let currentParentIndex = 0;
+  // Elements
+  const simulateButton = document.getElementById('simulate-dnd');
+  const sourceNode = document.getElementById('drag');
+
+  function simulateDragDrop(sourceNode, destinationNode) {
+    // Create dragstart event
+    const dragStartEvent = new DragEvent('dragstart', {
+      bubbles: true,
+      cancelable: true
+    });
+    // Create dragend event
+    const dragEndEvent = new DragEvent('dragend', {
+      bubbles: true,
+      cancelable: true
+    });
+    // Create drop event
+    const dropEvent = new DragEvent('drop', {
+      bubbles: true,
+      cancelable: true
+    });
+    // Dispatch dragstart event to the draggable element
+    sourceNode.dispatchEvent(dragStartEvent);
+    // Dispatch drop event to container element we want to drop the draggable
+    destinationNode.dispatchEvent(dropEvent);
+    // Dispatch dragend event to the draggable element
+    sourceNode.dispatchEvent(dragEndEvent);
+  }
+  simulateButton.addEventListener('click', function () {
+    // Change drop container index to other container than the current
+    const newParentIndex = currentParentIndex === 0 ? 1 : 0;
+    // Get the drop container element
+    const destinationNode = document.getElementsByClassName('dropzone')[newParentIndex];
+    // Initiate simulation sequence
+    simulateDragDrop(sourceNode, destinationNode);
+    // Save the new container index
+    currentParentIndex = newParentIndex;
+  });
+  // Drag n Drop handling
+  let dragged;
+  document.addEventListener("dragstart", function (event) {
+    // store a ref. on the dragged elem
+    dragged = event.target;
+    // make it half transparent
+    event.target.style.opacity = .5;
+  }, false);
+  document.addEventListener("dragend", function (event) {
+    // reset the transparency
+    event.target.style.opacity = "";
+  }, false);
+  /* events fired on the drop targets */
+  document.addEventListener("dragover", function (event) {
+    // prevent default to allow drop
+    event.preventDefault();
+  }, false);
+  document.addEventListener("dragenter", function (event) {
+    // highlight potential drop target when the draggable element enters it
+    if (event.target.className == "dropzone") {
+      event.target.style.background = "yellow";
+    }
+  }, false);
+  document.addEventListener("dragleave", function (event) {
+    // reset background of potential drop target when the draggable element leaves it
+    if (event.target.className == "dropzone") {
+      event.target.style.background = "";
+    }
+  }, false);
+  document.addEventListener("drop", function (event) {
+    // prevent default action (open as link for some elements)
+    event.preventDefault();
+    // move dragged elem to the selected drop target
+    if (event.target.className == "dropzone") {
+      event.target.style.background = "";
+      dragged.parentNode.removeChild(dragged);
+      event.target.appendChild(dragged);
+      currentParentIndex = Array.prototype.indexOf.call(event.target.parentNode.children, event.target);
+    }
+  }, false);
+  </script>
+</body>
+
+</html>
