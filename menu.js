@@ -242,6 +242,8 @@ class Mouse {
   }
 }
 
+// 錄製腳本參考程式
+
 var mouse = new Mouse(300, 300);
 
 await mouse.clickItem('開發板');
@@ -254,3 +256,6 @@ await mouse.clickItem('怪獸控制');
 await mouse.moveBlockTo(0, 340, 210, attach = true);
 
 await mouse.clickRunButton();
+
+
+
